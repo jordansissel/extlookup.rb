@@ -26,6 +26,7 @@ def facter_to_str(str)
   end
 end
 
+# Set some defaults
 datadir = nil
 precedence = []
 withnames = false
@@ -47,11 +48,17 @@ end
 
 args = parser.parse(ARGV)
 
-precedence = [ 
-  "%{deployment}/%{fqdn}", "%{deployment}/config", 
-  "common", "truth" 
-]
+if datadir.nil?
+  $stderr.puts "Missing --datadir?"
+  exit 1
+end
 
+if precedence.empty?
+  $stderr.puts "Missing -p (or --precedence)? (at least one required)"
+  exit 1
+end
+
+# Tell facter to do it's magic and load fact plugins.
 Facter.loadfacts
 
 # Take the precedence paths and expand %{...} on them
