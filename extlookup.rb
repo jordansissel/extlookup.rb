@@ -7,13 +7,13 @@ require "facter"
 # Load an array of CSV files (as string paths)
 # Returns a hash of the first column as the key with the rest of the 
 # row as an array.
-# If there are duplicate keys, the arrays are merged.
 def csv2hash(paths)
-  data = Hash.new { |h,k| h[k] = [] }
+  data = {}
   paths.each do |path|
     next unless File.exists?(path)
     csv = CSV.read(path).find_all do |row|
-      data[row[0]] += row[1..-1]
+      next if data[row[0]]
+      data[row[0]] = row[1..-1]
     end # CSV.read.find_all
   end # paths.each
   return data
